@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [ -z "$1" ]
+then
+    echo "Usage: kata title"
+    exit 1
+fi
+
+if [ -d $HOME/kata/$1 ]
+then
+    echo "This kata already exists. Please delete it or use a different name."
+    exit 1
+fi
+
+if [ ! -d $HOME/kata ]
+then
+    mkdir $HOME/kata
+fi
+
+mkdir $HOME/kata/$1
+cd $HOME/kata/$1
+
+echo '{ "autoload": { "psr-4": { "": "src/" } } }' > $HOME/kata/$1/composer.json
+
+composer require --dev phpspec/phpspec
+composer update
+
+ln -s vendor/phpspec/phpspec/bin/phpspec phpspec
+
+./phpspec describe $1
